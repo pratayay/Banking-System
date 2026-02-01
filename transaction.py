@@ -1,7 +1,11 @@
 import db
 import datetime
+from Authorization import Accounts
 
-class Transactions:
+class Transactions(Accounts):
+
+    def pull_acno(self,):
+         db.cur.execute("select * from accounts")
 
     def check_amount(self,amount):
         if amount<=0:
@@ -28,6 +32,9 @@ class Transactions:
     def deposit(self):
         try:
             ac_no=int(input("Enter your Account Number: "))
+            if not self.is_account_owner(ac_no):
+                 print("Entry Denied\nInvalid Account OR Account Not created Yet")
+                 return
             C_ac=self.check_account(ac_no)
             if C_ac==False:
                 print(f"Account with Account Number:{ac_no} Does not exists. Please try again.")
@@ -86,6 +93,9 @@ class Transactions:
     def withdraw(self):
         try:
             ac_no=int(input("Enter account number: "))
+            if not self.is_account_owner(ac_no):
+                 print("Entry Denied\nInvalid Account OR Account Not created Yet")
+                 return
             
             C_ac=self.check_account(ac_no)
             if C_ac==False:
@@ -125,6 +135,9 @@ class Transactions:
     def transaction_log(self):
         try:
             ac_no=int(input("Enter account number: "))
+            if not self.is_account_owner(ac_no):
+                 print("Entry Denied\nInvalid Account OR Account Not created Yet")
+                 return
             
             C_ac=self.check_account(ac_no)
             if C_ac==False:
@@ -149,6 +162,9 @@ class Transactions:
     def transfer(self):
         try:
             ac_no=int(input("Enter account number: "))
+            if not self.is_account_owner(ac_no):
+                 print("Entry Denied\nInvalid Account OR Account Not created Yet")
+                 return
             
             C_ac=self.check_account(ac_no)
             if C_ac==False:
@@ -160,6 +176,10 @@ class Transactions:
                     print(f"Account Number: {ac_no} is inoperable")
                     return
             ac2_no=int(input("Enter Account Number in which You Want To Tranfer: "))
+            if ac_no==ac2_no:
+                 print("!Cannot Transfer to your Own Account!")
+                 return
+            
             C_ac2=self.check_account(ac2_no)
             if C_ac2==False:
                     print(f"Account with Account Number:{ac2_no} Does not exists. Please try again.")
@@ -170,10 +190,10 @@ class Transactions:
                     print(f"Account Number: {ac2_no} is inoperable")
                     return
             
-            amount=float("Enter the Amount To Transfer: ")
+            amount=float(input("Enter the Amount To Transfer: "))
             
             if amount<=0:
-                print("!The Withdrwan Amount must be greater than 0!")
+                print("!The Transfer Amount must be greater than 0!")
                 return
             db.cur.execute("Select balance from accounts where account_no=%s",(ac_no,))
             balance1=db.cur.fetchone()[0]
@@ -199,7 +219,7 @@ class Transactions:
                            Insert into transactions(account_no,txn_type,amount,txn_time)
                            values(%s,%s,%s,%s),
                                  (%s,%s,%s,%s)
-                             """,value)
+                             """,value1)
             db.con.commit()
             print("Transfer Successfull!")
         

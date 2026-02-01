@@ -1,5 +1,5 @@
 import db
-
+from auth import Authentication
 class Accounts:
 
     def check_user(self,user_id):
@@ -23,14 +23,16 @@ class Accounts:
         try:
             
             print("Enter details to create account....")
-            x=int(input("Enter user_id: "))
-            C_user=self.check_user(x)
-            if C_user==False:
-               print(f"User with this ID:{x} Does not exists. Please register First")
-               return
-            C1=self.check_account(x)
+            
+
+            user_id = Authentication.get_logged_user()
+            if user_id is None:
+                print("Please Login First")
+
+            
+            C1=self.check_account(user_id)
             if C1==True:
-                print(f"Account with this User ID:{x} already exists. Please try again.")
+                print(f"Account with this User ID:{user_id} already exists. Please try again.")
                 return
             while True:
                 balance=float(input("Enter amount to Deposit initially: "))
@@ -41,7 +43,7 @@ class Accounts:
 
 
             sql1="Insert into accounts(user_id,balance,status) values(%s,%s,%s)"
-            values=(x,balance,"Active")
+            values=(user_id,balance,"Active")
             db.cur.execute(sql1,values)
             db.con.commit()
 
