@@ -2,6 +2,7 @@ from users import User
 from accounts import Accounts
 from transaction import Transactions
 from passbook import Passbook
+from loan import Loan
 import auth
 
 
@@ -22,7 +23,8 @@ def bank_menu():
     print("5. View Transaction Log")
     print("6. View Passbook")
     print("7. Download Passbook (TXT)")
-    print("8. Logout")
+    print("8. Loan Services")
+    print("9. Logout")
     print("==========================")
 
 
@@ -31,7 +33,7 @@ def main():
     acc = Accounts()
     txn = Transactions()
     pb = Passbook()
-
+    loan=Loan()
     while True:
 
         if not auth.Authentication.is_logged_in():
@@ -84,7 +86,10 @@ def main():
                 elif choice == 7:
                     pb.download_passbook()
 
-                elif choice == 8:
+                elif choice==8:
+                    loan.menu()
+
+                elif choice == 9:
                     auth.Authentication.logout()
 
                 else:

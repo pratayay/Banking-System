@@ -22,8 +22,6 @@ class Accounts:
     def create_account(self):
         try:
             
-            print("Enter details to create account....")
-            
 
             user_id = Authentication.get_logged_user()
             if user_id is None:
@@ -37,6 +35,7 @@ class Accounts:
             while True:
                 balance=float(input("Enter amount to Deposit initially: "))
                 if balance<0:
+                    balance=0
                     print("Initial deposit cannot be negative. Please try again.")
                 else:
                     break
