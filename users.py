@@ -24,6 +24,7 @@ class User:
             if len(str(mobile))<10:
                 print("!Enter 10 Digit Mobile Number!")
                 return
+            email=input("Enter Your Mail ID: ")
 
             if not name or not aadhaar or not mobile:
                 print("All fields are required. Please try again.")
@@ -34,8 +35,8 @@ class User:
                 print("User with this Aadhaar already exists. Please try again.")
                 return
 
-            sql1=("Insert into users(name,aadhaar,mobile) values(%s,%s,%s)")
-            values=(name,aadhaar,mobile)
+            sql1=("Insert into users(name,aadhaar,mobile,Email) values(%s,%s,%s,%s)")
+            values=(name,aadhaar,mobile,email)
             db.cur.execute(sql1,values)
             db.con.commit()
             

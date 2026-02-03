@@ -52,18 +52,14 @@ class Loan:
             except ValueError:
                 print("Please enter a valid number.")
 
-    # ---------------------------------
-    # EMI CALCULATION (SIMPLE INTEREST)
-    # ---------------------------------
+
     def calculate_emi(self, principal, rate, tenure):
         interest = (principal * rate * tenure) / (12 * 100)
         total = principal + interest
         emi = total / tenure
         return round(emi, 2), round(total, 2)
 
-    # ---------------------------------
-    # APPLY FOR LOAN
-    # ---------------------------------
+
     def apply_loan(self):
         try:
             user_id = auth.Authentication.get_logged_user()
@@ -87,8 +83,7 @@ class Loan:
                 return
 
             emi, total = self.calculate_emi(principal, rate, tenure)
-            print(f"Your Monthly EMI is: {emi}")
-            print(f"Your Total Amount Payable: {total}")
+           
 
             db.cur.execute("""
                 INSERT INTO loans
@@ -122,11 +117,17 @@ class Loan:
             user_id = auth.Authentication.get_logged_user()
 
             db.cur.execute("""
-                SELECT loan_id, account_no, emi_amount, outstanding_amount
-                FROM loans
-                WHERE user_id=%s AND loan_status='Active'
-            """, (user_id,))
+               SELECT loan_id, account_no, emi_amount, outstanding_amount
+               FROM loans
+               WHERE user_id=%s
+               AND loan_status='Active'
+               AND approval_status='Approved'
+               """, (user_id,))
+
             loan = db.cur.fetchone()
+            if not loan:
+                print("Loan Approval is pending!")
+                return
 
             loan_id     = loan[0]
             acc_no      = loan[1]

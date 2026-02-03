@@ -1,5 +1,6 @@
 import db
 import users
+from otp import OTP_auth
 
 current_user_id=None
 
@@ -31,20 +32,45 @@ class Authentication(users.User):
         global current_user_id
         try:
             print("*******User Authentication*********")
-            user_id=int(input("Enter User ID: "))
+            user_id = int(input("Enter User ID: "))
+            mobile_no = input("Enter Mobile Number: ")
+
             
-            aadhar=input("Enter Aadhar Number: ")
-            mobile_no=input("Enter Mobile Number: ")
+            db.cur.execute(
+                "SELECT user_id, email FROM users WHERE user_id=%s AND mobile=%s",
+                (user_id, mobile_no)
+            )
+            user = db.cur.fetchone()
 
-            db.cur.execute("Select user_id from users where user_id=%s And aadhaar=%s and mobile=%s",(user_id,aadhar,mobile_no))
-            valid=db.cur.fetchone()
+            if not user:
+                print("!Invalid Credential!")
+                return False
 
-            if valid:
-                current_user_id=valid[0]
+            
+            email = user[1]
+
+            
+            otp = OTP_auth.generate_otp()
+
+            
+            OTP_auth.send_otp_email(email, otp)
+            print("OTP sent to your registered email.")
+
+            
+            try:
+                user_otp = int(input("Enter OTP: "))
+            except ValueError:
+                print("Invalid OTP format.")
+                return False
+
+            if user_otp == otp:
+                current_user_id = user_id
+                print("Login successful.")
                 return True
             else:
-               print("!Invalid Credential!")
-               return False
+                print("Invalid OTP.")
+                return False
+
             
         except ValueError:
             print("User ID must be numeric")

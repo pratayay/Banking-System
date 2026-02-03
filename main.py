@@ -4,15 +4,23 @@ from transaction import Transactions
 from passbook import Passbook
 from loan import Loan
 import auth
+from admin import Admin
 
 
 def auth_menu():
     print("\n====== WELCOME ======")
     print("1. Login")
     print("2. Register")
-    print("3. Exit")
+    print("3. Admin")
+    print("4. Exit")
     print("=====================")
 
+def admin_access_menu():
+    print("\n====== ADMIN ACCESS ======")
+    print("1. Admin Login")
+    print("2. Admin Register")
+    print("3. Back")
+    print("==========================")
 
 def bank_menu():
     print("\n====== BANKING MENU ======")
@@ -34,6 +42,7 @@ def main():
     txn = Transactions()
     pb = Passbook()
     loan=Loan()
+    adm=Admin()
     while True:
 
         if not auth.Authentication.is_logged_in():
@@ -48,8 +57,29 @@ def main():
                 elif choice == 2:
                     u.create_user()
 
+
                 elif choice == 3:
-                    print("Thank you for using the Banking System.")
+                    while True:
+                        admin_access_menu()
+                        ch = input("Enter your choice: ")
+
+                        if ch == "1":
+                            adm.login()
+                            adm.admin_menu()
+
+                            break
+
+                        elif ch == "2":
+                            adm.admin_registration()
+
+                        elif ch == "3":
+                            break
+
+                    else:
+                        print("Invalid choice.")
+                
+                elif choice==4:
+                    print("Thank You For Using Our Banking System")
                     break
 
                 else:
@@ -59,7 +89,7 @@ def main():
                 print("Please enter a valid number.")
 
         
-        else:
+        elif auth.Authentication.is_logged_in():
             bank_menu()
 
             try:
